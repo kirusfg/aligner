@@ -1,8 +1,10 @@
 from pydub import AudioSegment
 import sys, time, re, os
+import pathlib
 
 def time_to_millisec(time_seg):
     time_seg = time_seg.replace("\n","")
+    time_seg = time_seg.split(" ")[0]
     no_frac, frac = time_seg.split(".")
 
     struct_time = time.strptime(no_frac, "%H:%M:%S")
@@ -75,7 +77,7 @@ def make_corpus(wav, vtt, output_corpus):
     audio = AudioSegment.from_wav(wav)
 
     try:
-        os.mkdir(output_corpus)
+        pathlib.Path(output_corpus).mkdir(parents=True, exist_ok=True)
     except Exception as e:
         print("dir already exists")
 
@@ -91,7 +93,7 @@ def make_corpus(wav, vtt, output_corpus):
         segment_name = os.path.join(output_corpus,str(initial) + "_" + str(end) + ".wav")
         #segment_name = os.path.join(output_corpus,segment_name)
         # Export wav segment
-        wav_segment.export(segment_name,format="wav")
+        wav_segment.export(segment_name, format="wav")
         textgrid_name = segment_name.replace(".wav",".TextGrid")
         # Create corresponding TextGrid file
         create_textgrid(initial,end,textgrid_name, text)
